@@ -13,26 +13,33 @@ export default function App() {
   ]);
   const [loading, setLoading] = useState(false);
 
-  // Handle Document Upload & Text Extraction
-  const handleFileUpload = (e) => {
-    const files = Array.from(e.target.files);
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const textContent = event.target.result;
-        setFileTexts(prev => [...prev, { name: file.name, content: textContent }]);
-      };
-      reader.readAsText(file);
-    });
+  // Updated Handle Document Upload & Text Extraction
+const handleFileUpload = (e) => {
+  const files = Array.from(e.target.files);
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      let textContent = event.target.result;
+      
+      // Basic text cleaning to strip XML tags and unprintable binary characters
+      textContent = textContent
+        .replace(/<[^>]+>/g, ' ')                  // Strip XML/HTML tags
+        .replace(/[^\x20-\x7E\n\r\t]/g, ' ')       // Strip non-printable ASCII binary characters
+        .replace(/\s+/g, ' ')                       // Collapse multiple spaces
+        .trim();
 
-    const newDocs = files.map(file => ({
-      name: file.name,
-      size: (file.size / 1024).toFixed(1) + ' KB',
-      status: 'Indexed'
-    }));
-    setDocuments(prev => [...prev, ...newDocs]);
-  };
+      setFileTexts(prev => [...prev, { name: file.name, content: textContent }]);
+    };
+    reader.readAsText(file);
+  });
 
+  const newDocs = files.map(file => ({
+    name: file.name,
+    size: (file.size / 1024).toFixed(1) + ' KB',
+    status: 'Indexed'
+  }));
+  setDocuments(prev => [...prev, ...newDocs]);
+};
   // Handle Chat Query with Clean Keyword Matching & Fallback
   const handleSendQuery = (e) => {
     e.preventDefault();
