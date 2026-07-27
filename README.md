@@ -1,16 +1,21 @@
-# React + Vite
+# Retrieval-Augmented Knowledge Assistant (RAG) - InnoViast
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+## Overview
+A lightweight RAG-based knowledge assistant prototype built for the InnoViast Week 4 AI Solutions Engineering assignment. This app allows users to ingest documents and ask grounded questions with source references.
 
-Currently, two official plugins are available:
+## Features
+- **Document Ingestion:** Upload and index context documents.
+- **Grounded Q&A:** Answers questions based strictly on uploaded knowledge base files.
+- **Source Citations:** Displays precise source document names and chunk indexes.
+- **Fallback Guardrails:** Warns users when no context is available to prevent hallucinations.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
+- React.js
+- Vite
+- Custom CSS / Inline Styling
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Setup & Run Locally
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/talhazu-dev/RAG-Assistant-InnoViast.git](https://github.com/talhazu-dev/RAG-Assistant-InnoViast.git)
+   
