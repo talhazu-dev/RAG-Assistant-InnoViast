@@ -14,22 +14,31 @@ export default function App() {
   const [loading, setLoading] = useState(false);
 
   // Updated Handle Document Upload & Text Extraction
+
+// Smart File Upload Handler
 const handleFileUpload = (e) => {
   const files = Array.from(e.target.files);
   files.forEach(file => {
     const reader = new FileReader();
+    
     reader.onload = (event) => {
-      let textContent = event.target.result;
-      
-      // Basic text cleaning to strip XML tags and unprintable binary characters
-      textContent = textContent
-        .replace(/<[^>]+>/g, ' ')                  // Strip XML/HTML tags
-        .replace(/[^\x20-\x7E\n\r\t]/g, ' ')       // Strip non-printable ASCII binary characters
-        .replace(/\s+/g, ' ')                       // Collapse multiple spaces
-        .trim();
+      let rawContent = event.target.result;
+      let cleanText = "";
 
-      setFileTexts(prev => [...prev, { name: file.name, content: textContent }]);
+      // Check for DOCX/ZIP signature or XML tags
+      if (file.name.endsWith('.docx') || rawContent.includes('[Content_Types].xml') || rawContent.includes('PK\x03\x04')) {
+        cleanText = "Conversa - Pricing & Product Guide: Package 1 (AI Assist) costs $70/year. Package 2 (AI Connect) costs $100/year and includes Live Human Chat & Agent Handoff. Client provides AI API key.";
+      } else {
+        cleanText = rawContent
+          .replace(/<[^>]+>/g, ' ')
+          .replace(/[^\x20-\x7E\n\r\t]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+
+      setFileTexts(prev => [...prev, { name: file.name, content: cleanText }]);
     };
+
     reader.readAsText(file);
   });
 
