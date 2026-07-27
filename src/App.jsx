@@ -33,7 +33,7 @@ export default function App() {
     setDocuments(prev => [...prev, ...newDocs]);
   };
 
-  // Handle Chat Query with RAG Grounding & Fallback Check
+  // Handle Chat Query with Clean Keyword Matching & Fallback
   const handleSendQuery = (e) => {
     e.preventDefault();
     if (!query.trim()) return;
@@ -55,35 +55,40 @@ export default function App() {
           sources: []
         };
       } else {
-        // 2. Search extracted file texts for keywords matching user query
-        const queryKeywords = currentQuery.toLowerCase().split(' ').filter(word => word.length > 2);
-        
+        // Clean query: lowercase and strip punctuation (?, !, ., etc.)
+        const cleanedQuery = currentQuery.toLowerCase().replace(/[^\w\s]/gi, '');
+        const queryKeywords = cleanedQuery.split(/\s+/).filter(word => word.length > 2);
+
         let foundMatch = false;
         let matchedDocName = '';
         let matchedExcerpt = '';
 
         for (const doc of fileTexts) {
           const contentLower = doc.content.toLowerCase();
-          // Check if any significant word from query exists in document
-          const isRelevant = queryKeywords.some(keyword => contentLower.includes(keyword));
+          const docNameLower = doc.name.toLowerCase();
+
+          // Check if any query word matches the document content OR the document name
+          const isRelevant = queryKeywords.some(keyword => 
+            contentLower.includes(keyword) || docNameLower.includes(keyword)
+          );
 
           if (isRelevant) {
             foundMatch = true;
             matchedDocName = doc.name;
-            matchedExcerpt = doc.content.substring(0, 150) + '...';
+            matchedExcerpt = doc.content.substring(0, 180) + '...';
             break;
           }
         }
 
         if (foundMatch) {
-          // Success Response: Grounded context found
+          // Grounded Success Response
           botResponse = {
             sender: 'bot',
             text: `Retrieval Result for "${currentQuery}": Grounded context found in ${matchedDocName}.\n\nPreview: "${matchedExcerpt}"`,
             sources: [matchedDocName, 'Chunk_Vector_Index_01']
           };
         } else {
-          // 3. Fallback: Query not found in knowledge base (Anti-Hallucination)
+          // Fallback Notice (Anti-Hallucination)
           botResponse = {
             sender: 'bot',
             text: `⚠️ Fallback Guardrail Triggered: No relevant context found in uploaded documents for "${currentQuery}". I cannot generate an ungrounded response.`,
